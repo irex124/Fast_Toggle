@@ -22,13 +22,6 @@ bl_info = {
     "category" : "Generic"
 }
 
-
-
-# def print_msg(msg):
-#     print("--------------------")
-#     print(msg)
-#     print("--------------------")
-
 if not "bpy" in locals():
     from . import (operators,panels)
 else:
