@@ -23,9 +23,10 @@ bl_info = {
 }
 
 if not "bpy" in locals():
-    from . import (operators,panels)
+    from . import (properties,operators,panels)
 else:
     from importlib import reload
+    reload(properties)
     reload(operators)
     reload(panels)
     del reload
@@ -33,9 +34,11 @@ else:
 import bpy
 
 def register():
+    properties.register()
     operators.register()
     panels.register()
 def unregister():
+    properties.unregister()
     operators.unregister()
     panels.register()
 
