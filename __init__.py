@@ -40,7 +40,7 @@ def register():
 def unregister():
     properties.unregister()
     operators.unregister()
-    panels.register()
+    panels.unregister()
 
 if __name__ == "__main__":
     register()

@@ -19,8 +19,6 @@ def update_color(self,context):
     for obj in context.selected_objects:
         obj.color=context.scene.fast_toggle.object_color
     
-
-
 class Fast_Toggle_Properties(PropertyGroup):
     operation_upon : EnumProperty(
         items = [("object", "Object", "", 1),
@@ -37,8 +35,6 @@ class Fast_Toggle_Properties(PropertyGroup):
         update=update_color,
         description="Change the color of the objects"
         )
-
-
 classes=[Fast_Toggle_Properties]
 def register():
     for cls in classes:

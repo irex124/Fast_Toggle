@@ -24,9 +24,10 @@ class VIEW3D_PT_fast_toggle_preferences(Panel):
 	bl_space_type='VIEW_3D'
 	bl_region_type='UI'
 	bl_category="Fast Toggle"
+	bl_options={'DRAW_BOX','DEFAULT_CLOSED'}
 
 	def draw(self,context):
-		Layout=self.layout.box()
+		Layout=self.layout
 		Col=Layout.column(align=True)
 		Col.label(text="Interface")
 		Col.prop(Preferences.view,"ui_scale")
@@ -60,9 +61,16 @@ class VIEW3D_PT_fast_toggle_object(Panel):
 	bl_space_type='VIEW_3D'
 	bl_region_type='UI'
 	bl_category="Fast Toggle"
+	bl_options={'DRAW_BOX','DEFAULT_CLOSED'}
+
+	@classmethod
+	def poll(cls,context):
+		return (context.space_data.type == 'VIEW_3D')
+
+
 
 	def draw(self,context):
-		Layout=self.layout.box()
+		Layout=self.layout
 		Col=Layout.column(align=True)
 		Row=Col.row(align=True,heading="Change")
 		Row.prop(context.scene.fast_toggle,"operation_upon",expand=True)
@@ -100,21 +108,90 @@ class VIEW3D_PT_fast_toggle_object(Panel):
 		Row.operator("object.enable_in_front",text="+VE")
 		Row.operator("object.disable_in_front",text="-VE")
 
+class VIEW3D_PT_fast_toggle_viewport(Panel):
+	bl_label="Viewport"
+	bl_space_type='VIEW_3D'
+	bl_region_type='UI'
+	bl_category="Fast Toggle"
+	bl_options={'DRAW_BOX','DEFAULT_CLOSED'}
+
+	@classmethod
+	def poll(cls,context):
+		return (context.space_data.type == 'VIEW_3D')
+
+	def draw(self,context):
+		pass
+
+
+
+class VIEW3D_PT_fast_toggle_viewport_guides(Panel):
+	bl_label="Guides and Text and Infos"
+	bl_space_type='VIEW_3D'
+	bl_region_type='UI'
+	bl_category="Fast Toggle"
+	bl_parent_id="VIEW3D_PT_fast_toggle_viewport"
+
+	def draw(self,context):
+		Layout=self.layout
+		Col=Layout.column(align=True)
+		Row=Col.row(align=True,heading="Guides")
+		Row.prop(context.space_data.overlay,"show_ortho_grid",text="Grid",toggle=True)
+		Row.prop(context.space_data.overlay,"show_floor",text="Floor",toggle=True)
 		Col.separator()
-		Col.prop(context.scene.fast_toggle,"object_color",text="")
+		Row=Col.row(align=True)
+		Row.prop(context.space_data.overlay,"show_axis_x",text="X",toggle=True)
+		Row.prop(context.space_data.overlay,"show_axis_y",text="Y",toggle=True)
+		Row.prop(context.space_data.overlay,"show_axis_z",text="Z",toggle=True)
+		Col.separator()
+		Row=Col.row(align=True)
+		Row.prop(context.space_data.overlay,"show_text",text="Text",toggle=True)
+		Row.prop(context.space_data.overlay,"show_stats",text="Stats",toggle=True)
 		
+		Row=Col.row(align=True)
+		Row.prop(context.space_data.overlay,"show_cursor",text="3D Cursor",toggle=True)
+		Row.prop(context.space_data.overlay,"show_annotation",text="Annotation",toggle=True)
 		
+class VIEW3D_PT_fast_toggle_viewport_shading(Panel):
+	bl_label="Shading"
+	bl_space_type='VIEW_3D'
+	bl_region_type='UI'
+	bl_category="Fast Toggle"
+	bl_parent_id="VIEW3D_PT_fast_toggle_viewport"
+
+	def draw(self,context):
+		Layout=self.layout
+		Col=Layout.column(align=True)
+		Col.label(text="Shading Color")
+		Col.grid_flow(columns=3,align=True).prop(context.space_data.shading,"color_type",expand=True)		
+		
+		if context.selected_objects and context.space_data.shading.color_type=="OBJECT":
+			Col.separator()
+			if len(context.selected_objects)==1:
+				Col.prop(context.object,"color",text="")
+			else:
+				Col.prop(context.scene.fast_toggle,"object_color")
+		if context.space_data.shading.color_type=="SINGLE":
+			Col.separator()
+			Col.prop(context.space_data.shading,"single_color",text="")
 		
 
 
+registerable_classes=[
+	VIEW3D_PT_fast_toggle_preferences,
+	VIEW3D_PT_fast_toggle_object,
+	VIEW3D_PT_fast_toggle_viewport,
+]
 
-
-registerable_classes=[]
 
 for name in  inspect.getmembers(sys.modules[__name__],inspect.isclass):		
 	cls = getattr(sys.modules[__name__],name[0])
 	if getattr(cls,"bl_label",False):
+		if cls in registerable_classes:
+			pass
+		
 		registerable_classes.append(cls)
+
+
 
 def register():
 	for cls in registerable_classes:
